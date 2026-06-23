@@ -15,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import com.garyfimo.gogym.api.ExerciseApi
 import com.garyfimo.gogym.model.Exercise
 import com.garyfimo.gogym.theme.components.GoGymSearchField
@@ -25,6 +26,8 @@ import org.koin.compose.koinInject
 fun ExerciseListScreen(
     onExerciseClick: (Exercise) -> Unit,
     modifier: Modifier = Modifier,
+    isSelectionMode: Boolean = false,
+    onBackClick: (() -> Unit)? = null,
     exerciseApi: ExerciseApi = koinInject()
 ) {
     var exercises by remember { mutableStateOf<List<Exercise>?>(null) }
@@ -52,14 +55,40 @@ fun ExerciseListScreen(
             .background(MaterialTheme.colorScheme.background)
             .padding(horizontal = 16.dp)
     ) {
-        Spacer(modifier = Modifier.height(16.dp))
-        
-        Text(
-            text = "Exercises",
-            style = MaterialTheme.typography.headlineLarge,
-            fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.onBackground
-        )
+        if (isSelectionMode) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 16.dp, bottom = 8.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                if (onBackClick != null) {
+                    IconButton(onClick = onBackClick) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Back",
+                            tint = MaterialTheme.colorScheme.onBackground
+                        )
+                    }
+                    Spacer(modifier = Modifier.width(8.dp))
+                }
+                Text(
+                    text = "Select Exercise",
+                    style = MaterialTheme.typography.headlineMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onBackground
+                )
+            }
+        } else {
+            Spacer(modifier = Modifier.height(16.dp))
+            
+            Text(
+                text = "Exercises",
+                style = MaterialTheme.typography.headlineLarge,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onBackground
+            )
+        }
         
         Spacer(modifier = Modifier.height(12.dp))
 
