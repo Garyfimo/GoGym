@@ -19,10 +19,12 @@ import org.jetbrains.compose.resources.painterResource
 import gogym.shared.generated.resources.Res
 import gogym.shared.generated.resources.compose_multiplatform
 
+import com.garyfimo.gogym.theme.GoGymTheme
+
 @Composable
 @Preview
 fun App() {
-    MaterialTheme {
+    GoGymTheme {
         var showContent by remember { mutableStateOf(false) }
         Column(
             modifier = Modifier
