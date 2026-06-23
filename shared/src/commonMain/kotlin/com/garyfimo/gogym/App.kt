@@ -30,48 +30,61 @@ import com.garyfimo.gogym.theme.GoGymTheme
 import com.garyfimo.gogym.home.HomeDashboardScreen
 import com.garyfimo.gogym.exercises.ExerciseListScreen
 import com.garyfimo.gogym.exercises.ExerciseDetailScreen
+import com.garyfimo.gogym.workout.ActiveWorkoutScreen
 
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.compose.currentBackStackEntryAsState
 
 import androidx.savedstate.read
-
-enum class Screen {
-    Dashboard,
-    Exercises
-}
 
 @Composable
 @Preview
 fun App() {
     KoinContext {
         GoGymTheme {
-            var currentScreen by remember { mutableStateOf(Screen.Dashboard) }
-            val greetingService = koinInject<Greeting>()
-            val platformGreeting = remember { greetingService.greet() }
+            val navController = rememberNavController()
+            val navBackStackEntry by navController.currentBackStackEntryAsState()
+            val currentRoute = navBackStackEntry?.destination?.route
+
+            // Show bottom bar only on primary dashboard & exercise list screens
+            val showBottomBar = currentRoute == "dashboard" || currentRoute == "exercises"
 
             Scaffold(
                 bottomBar = {
-                    NavigationBar(
-                        containerColor = MaterialTheme.colorScheme.surface
-                    ) {
-                        NavigationBarItem(
-                            icon = { Icon(Icons.Default.Home, contentDescription = "Dashboard") },
-                            label = { Text("Dashboard") },
-                            selected = currentScreen == Screen.Dashboard,
-                            onClick = { 
-                                currentScreen = Screen.Dashboard 
-                            }
-                        )
-                        NavigationBarItem(
-                            icon = { Icon(Icons.AutoMirrored.Filled.List, contentDescription = "Exercises") },
-                            label = { Text("Exercises") },
-                            selected = currentScreen == Screen.Exercises,
-                            onClick = { 
-                                currentScreen = Screen.Exercises
-                            }
-                        )
+                    if (showBottomBar) {
+                        NavigationBar(
+                            containerColor = MaterialTheme.colorScheme.surface
+                        ) {
+                            NavigationBarItem(
+                                icon = { Icon(Icons.Default.Home, contentDescription = "Dashboard") },
+                                label = { Text("Dashboard") },
+                                selected = currentRoute == "dashboard",
+                                onClick = { 
+                                    if (currentRoute != "dashboard") {
+                                        navController.navigate("dashboard") {
+                                            popUpTo("dashboard") { inclusive = true }
+                                            launchSingleTop = true
+                                        }
+                                    }
+                                }
+                            )
+                            NavigationBarItem(
+                                icon = { Icon(Icons.AutoMirrored.Filled.List, contentDescription = "Exercises") },
+                                label = { Text("Exercises") },
+                                selected = currentRoute == "exercises",
+                                onClick = { 
+                                    if (currentRoute != "exercises") {
+                                        navController.navigate("exercises") {
+                                            popUpTo("dashboard") { saveState = true }
+                                            launchSingleTop = true
+                                            restoreState = true
+                                        }
+                                    }
+                                }
+                            )
+                        }
                     }
                 }
             ) { innerPadding ->
@@ -80,35 +93,44 @@ fun App() {
                         .fillMaxSize()
                         .padding(innerPadding)
                 ) {
-                    when (currentScreen) {
-                        Screen.Dashboard -> {
+                    NavHost(
+                        navController = navController,
+                        startDestination = "dashboard"
+                    ) {
+                        composable("dashboard") {
                             HomeDashboardScreen(
                                 onStartWorkoutClick = {
-                                    // Quick action start workout handler
+                                    navController.navigate("active_workout")
                                 },
                                 onBrowseExercisesClick = {
-                                    currentScreen = Screen.Exercises
+                                    navController.navigate("exercises") {
+                                        popUpTo("dashboard") { saveState = true }
+                                        launchSingleTop = true
+                                        restoreState = true
+                                    }
                                 }
                             )
                         }
-                        Screen.Exercises -> {
-                            val navController = rememberNavController()
-                            NavHost(navController = navController, startDestination = "list") {
-                                composable("list") {
-                                    ExerciseListScreen(
-                                        onExerciseClick = { exercise ->
-                                            navController.navigate("detail/${exercise.id}")
-                                        }
-                                    )
+                        composable("exercises") {
+                            ExerciseListScreen(
+                                onExerciseClick = { exercise ->
+                                    navController.navigate("exercise_detail/${exercise.id}")
                                 }
-                                composable("detail/{exerciseId}") { backStackEntry ->
-                                    val exerciseId = backStackEntry.arguments?.read { getString("exerciseId") } ?: ""
-                                    ExerciseDetailScreen(
-                                        exerciseId = exerciseId,
-                                        onBackClick = { navController.popBackStack() }
-                                    )
+                            )
+                        }
+                        composable("exercise_detail/{exerciseId}") { backStackEntry ->
+                            val exerciseId = backStackEntry.arguments?.read { getString("exerciseId") } ?: ""
+                            ExerciseDetailScreen(
+                                exerciseId = exerciseId,
+                                onBackClick = { navController.popBackStack() }
+                            )
+                        }
+                        composable("active_workout") {
+                            ActiveWorkoutScreen(
+                                onBackClick = {
+                                    navController.popBackStack()
                                 }
-                            }
+                            )
                         }
                     }
                 }
