@@ -4,12 +4,14 @@ import androidx.compose.animation.core.*
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
@@ -40,6 +42,7 @@ import org.koin.compose.koinInject
 @Composable
 fun ActiveWorkoutScreen(
     onBackClick: () -> Unit,
+    onAddExerciseClick: () -> Unit,
     modifier: Modifier = Modifier,
     exerciseApi: ExerciseApi = koinInject(),
     viewModel: WorkoutSessionViewModel = viewModel { WorkoutSessionViewModel(exerciseApi) }
@@ -147,7 +150,7 @@ fun ActiveWorkoutScreen(
                         )
                     }
                     Button(
-                        onClick = { viewModel.openAddExerciseSheet() },
+                        onClick = onAddExerciseClick,
                         colors = ButtonDefaults.buttonColors(
                             containerColor = MaterialTheme.colorScheme.secondary,
                             contentColor = MaterialTheme.colorScheme.onSecondary
@@ -188,7 +191,7 @@ fun ActiveWorkoutScreen(
                         )
                         GoGymTextButton(
                             text = "Add your first exercise",
-                            onClick = { viewModel.openAddExerciseSheet() }
+                            onClick = onAddExerciseClick
                         )
                     }
                 }
@@ -270,110 +273,7 @@ fun ActiveWorkoutScreen(
         )
     }
 
-    // Add Exercise Bottom Sheet
-    if (state.isAddExerciseSheetOpen) {
-        ModalBottomSheet(
-            onDismissRequest = { viewModel.closeAddExerciseSheet() },
-            containerColor = MaterialTheme.colorScheme.surface,
-            dragHandle = { BottomSheetDefaults.DragHandle() }
-        ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxHeight(0.8f)
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp)
-            ) {
-                Text(
-                    text = "Add Exercise",
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(bottom = 12.dp)
-                )
 
-                GoGymSearchField(
-                    value = state.exerciseSearchQuery,
-                    onValueChange = { viewModel.setSearchQuery(it) },
-                    placeholder = "Search exercise name...",
-                    onClearClick = { viewModel.setSearchQuery("") },
-                    modifier = Modifier.fillMaxWidth()
-                )
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                Box(
-                    modifier = Modifier
-                        .weight(1f)
-                        .fillMaxWidth(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    if (state.isLoadingExercises) {
-                        CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
-                    } else if (state.error != null) {
-                        Text(
-                            text = "Error loading exercises: ${state.error}",
-                            color = MaterialTheme.colorScheme.error,
-                            textAlign = TextAlign.Center
-                        )
-                    } else {
-                        val filtered = state.availableExercises.filter {
-                            it.name.contains(state.exerciseSearchQuery, ignoreCase = true) ||
-                                    it.muscleGroup.contains(state.exerciseSearchQuery, ignoreCase = true)
-                        }
-
-                        if (filtered.isEmpty()) {
-                            Text(
-                                text = "No exercises found.",
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
-                            )
-                        } else {
-                            LazyColumn(
-                                verticalArrangement = Arrangement.spacedBy(8.dp),
-                                modifier = Modifier.fillMaxSize()
-                            ) {
-                                items(filtered) { exercise ->
-                                    Card(
-                                        shape = RoundedCornerShape(12.dp),
-                                        colors = CardDefaults.cardColors(
-                                            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
-                                        ),
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .clickable { viewModel.addExercise(exercise) }
-                                    ) {
-                                        Row(
-                                            modifier = Modifier.padding(12.dp),
-                                            horizontalArrangement = Arrangement.SpaceBetween,
-                                            verticalAlignment = Alignment.CenterVertically
-                                        ) {
-                                            Column(modifier = Modifier.weight(1f)) {
-                                                Text(
-                                                    text = exercise.name,
-                                                    style = MaterialTheme.typography.bodyLarge,
-                                                    fontWeight = FontWeight.Bold,
-                                                    color = MaterialTheme.colorScheme.onSurface
-                                                )
-                                                Text(
-                                                    text = exercise.muscleGroup,
-                                                    style = MaterialTheme.typography.bodyMedium,
-                                                    color = MaterialTheme.colorScheme.primary
-                                                )
-                                            }
-                                            Icon(
-                                                imageVector = Icons.Default.AddCircle,
-                                                contentDescription = "Add",
-                                                tint = MaterialTheme.colorScheme.primary
-                                            )
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
 }
 
 @Composable
@@ -628,32 +528,46 @@ fun MiniInputField(
     placeholder: String,
     modifier: Modifier = Modifier
 ) {
-    OutlinedTextField(
+    BasicTextField(
         value = value,
         onValueChange = onValueChange,
-        placeholder = {
-            Text(
-                text = placeholder,
-                style = MaterialTheme.typography.bodyMedium.copy(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f)),
-                textAlign = TextAlign.Center,
-                modifier = Modifier.fillMaxWidth()
-            )
-        },
         singleLine = true,
         keyboardOptions = KeyboardOptions(
             keyboardType = KeyboardType.Number,
             autoCorrectEnabled = false
         ),
-        shape = RoundedCornerShape(8.dp),
-        colors = OutlinedTextFieldDefaults.colors(
-            focusedBorderColor = MaterialTheme.colorScheme.primary,
-            unfocusedBorderColor = MaterialTheme.colorScheme.surfaceVariant,
-            focusedContainerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.2f),
-            unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.2f),
-            focusedTextColor = MaterialTheme.colorScheme.onSurface,
-            unfocusedTextColor = MaterialTheme.colorScheme.onSurface
+        textStyle = MaterialTheme.typography.bodyMedium.copy(
+            color = MaterialTheme.colorScheme.onSurface,
+            textAlign = TextAlign.Center
         ),
-        textStyle = MaterialTheme.typography.bodyMedium.copy(textAlign = TextAlign.Center),
+        decorationBox = { innerTextField ->
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(
+                        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.2f),
+                        shape = RoundedCornerShape(8.dp)
+                    )
+                    .border(
+                        width = 1.dp,
+                        color = MaterialTheme.colorScheme.surfaceVariant,
+                        shape = RoundedCornerShape(8.dp)
+                    )
+                    .padding(horizontal = 4.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                if (value.isEmpty()) {
+                    Text(
+                        text = placeholder,
+                        style = MaterialTheme.typography.bodyMedium.copy(
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f)
+                        ),
+                        textAlign = TextAlign.Center
+                    )
+                }
+                innerTextField()
+            }
+        },
         modifier = modifier.height(36.dp)
     )
 }

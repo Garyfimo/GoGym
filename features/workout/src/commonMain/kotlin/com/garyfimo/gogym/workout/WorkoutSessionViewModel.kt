@@ -101,6 +101,13 @@ class WorkoutSessionViewModel(
         }
     }
 
+    fun addExerciseById(exerciseId: String) {
+        val exercise = uiState.value.availableExercises.firstOrNull { it.id == exerciseId }
+        if (exercise != null) {
+            addExercise(exercise)
+        }
+    }
+
     fun removeExercise(exerciseId: String) {
         _uiState.update { state ->
             state.copy(exercises = state.exercises.filter { it.exercise.id != exerciseId })

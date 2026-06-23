@@ -31,6 +31,9 @@ import com.garyfimo.gogym.home.HomeDashboardScreen
 import com.garyfimo.gogym.exercises.ExerciseListScreen
 import com.garyfimo.gogym.exercises.ExerciseDetailScreen
 import com.garyfimo.gogym.workout.ActiveWorkoutScreen
+import com.garyfimo.gogym.workout.WorkoutSessionViewModel
+import com.garyfimo.gogym.api.ExerciseApi
+import androidx.lifecycle.viewmodel.compose.viewModel
 
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -126,8 +129,35 @@ fun App() {
                             )
                         }
                         composable("active_workout") {
+                            val exerciseApi = koinInject<ExerciseApi>()
+                            val workoutViewModel: WorkoutSessionViewModel = viewModel { WorkoutSessionViewModel(exerciseApi) }
+                            
+                            val savedStateHandle = navController.currentBackStackEntry?.savedStateHandle
+                            val selectedExerciseId = savedStateHandle?.getStateFlow<String?>("selected_exercise_id", null)?.collectAsState()?.value
+                            
+                            LaunchedEffect(selectedExerciseId) {
+                                selectedExerciseId?.let { id ->
+                                    workoutViewModel.addExerciseById(id)
+                                    savedStateHandle?.remove<String>("selected_exercise_id")
+                                }
+                            }
+                            
                             ActiveWorkoutScreen(
+                                viewModel = workoutViewModel,
                                 onBackClick = {
+                                    navController.popBackStack()
+                                },
+                                onAddExerciseClick = {
+                                    navController.navigate("exercises_selection")
+                                }
+                            )
+                        }
+                        composable("exercises_selection") {
+                            ExerciseListScreen(
+                                isSelectionMode = true,
+                                onBackClick = { navController.popBackStack() },
+                                onExerciseClick = { exercise ->
+                                    navController.previousBackStackEntry?.savedStateHandle?.set("selected_exercise_id", exercise.id)
                                     navController.popBackStack()
                                 }
                             )
