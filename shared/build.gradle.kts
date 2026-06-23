@@ -50,6 +50,7 @@ kotlin {
             api(project(":core"))
             api(project(":features:home"))
             api(project(":features:exercises"))
+            api(libs.androidx.core.bundle)
             implementation(libs.compose.runtime)
             implementation(libs.compose.foundation)
             implementation(libs.compose.material3)

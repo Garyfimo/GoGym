@@ -35,6 +35,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 
+import androidx.savedstate.read
+
 enum class Screen {
     Dashboard,
     Exercises
@@ -100,7 +102,7 @@ fun App() {
                                     )
                                 }
                                 composable("detail/{exerciseId}") { backStackEntry ->
-                                    val exerciseId = backStackEntry.arguments?.getString("exerciseId") ?: ""
+                                    val exerciseId = backStackEntry.arguments?.read { getString("exerciseId") } ?: ""
                                     ExerciseDetailScreen(
                                         exerciseId = exerciseId,
                                         onBackClick = { navController.popBackStack() }

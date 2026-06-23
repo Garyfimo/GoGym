@@ -30,6 +30,7 @@ kotlin {
         commonMain.dependencies {
             api(project(":core"))
             api(libs.androidx.navigation.compose)
+            api(libs.androidx.core.bundle)
             implementation(libs.compose.runtime)
             implementation(libs.compose.foundation)
             implementation(libs.compose.material3)
