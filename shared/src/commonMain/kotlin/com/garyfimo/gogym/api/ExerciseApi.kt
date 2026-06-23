@@ -4,13 +4,13 @@ import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
 import com.garyfimo.gogym.model.Exercise
-import com.garyfimo.gogym.Platform
+import com.garyfimo.gogym.config.AppConfig
 
 class ExerciseApi(
     private val client: HttpClient,
-    private val platform: Platform
+    private val appConfig: AppConfig
 ) {
     suspend fun getExercises(): List<Exercise> {
-        return client.get("${platform.apiBaseUrl}/api/exercises").body()
+        return client.get("${appConfig.baseUrl}/api/exercises").body()
     }
 }

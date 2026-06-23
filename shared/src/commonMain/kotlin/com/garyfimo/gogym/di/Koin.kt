@@ -6,6 +6,7 @@ import org.koin.dsl.module
 import com.garyfimo.gogym.Greeting
 import com.garyfimo.gogym.getPlatform
 import com.garyfimo.gogym.api.ExerciseApi
+import com.garyfimo.gogym.config.AppConfig
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.serialization.kotlinx.json.json
@@ -25,13 +26,27 @@ val commonModule = module {
             }
         }
     }
+    // ExerciseApi now injects HttpClient and AppConfig
     single { ExerciseApi(get(), get()) }
 }
 
-fun initKoin(appDeclaration: KoinAppDeclaration = {}) = startKoin {
+fun initKoin(appConfig: AppConfig, appDeclaration: KoinAppDeclaration = {}) = startKoin {
     appDeclaration()
-    modules(commonModule)
+    modules(
+        module {
+            single { appConfig }
+        },
+        commonModule
+    )
 }
 
-// iOS entry point helper
-fun initKoin() = initKoin {}
+// iOS/Preview entry point helper with default mock config
+fun initKoin() = initKoin(
+    AppConfig(
+        baseUrl = "http://localhost:8080",
+        environment = "MOCK"
+    )
+) {}
+
+// Custom config overload for platform calls
+fun initKoin(appConfig: AppConfig) = initKoin(appConfig) {}

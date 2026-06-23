@@ -32,6 +32,29 @@ android {
         versionCode = 1
         versionName = "1.0"
     }
+    buildFeatures {
+        buildConfig = true
+    }
+    flavorDimensions += "environment"
+    productFlavors {
+        create("mock") {
+            dimension = "environment"
+            applicationIdSuffix = ".mock"
+            buildConfigField("String", "BASE_URL", "\"http://10.0.2.2:8080\"")
+            buildConfigField("String", "ENV_NAME", "\"MOCK\"")
+        }
+        create("qa") {
+            dimension = "environment"
+            applicationIdSuffix = ".qa"
+            buildConfigField("String", "BASE_URL", "\"https://qa.api.gogym.com\"")
+            buildConfigField("String", "ENV_NAME", "\"QA\"")
+        }
+        create("prd") {
+            dimension = "environment"
+            buildConfigField("String", "BASE_URL", "\"https://api.gogym.com\"")
+            buildConfigField("String", "ENV_NAME", "\"PRD\"")
+        }
+    }
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
