@@ -27,9 +27,9 @@ import gogym.shared.generated.resources.Res
 import gogym.shared.generated.resources.compose_multiplatform
 
 import com.garyfimo.gogym.theme.GoGymTheme
-import com.garyfimo.gogym.ui.HomeDashboardScreen
-import com.garyfimo.gogym.ui.ExerciseListScreen
-import com.garyfimo.gogym.ui.ExerciseDetailScreen
+import com.garyfimo.gogym.home.HomeDashboardScreen
+import com.garyfimo.gogym.exercises.ExerciseListScreen
+import com.garyfimo.gogym.exercises.ExerciseDetailScreen
 
 enum class Screen {
     Dashboard,

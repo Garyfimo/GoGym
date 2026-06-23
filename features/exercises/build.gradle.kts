@@ -5,25 +5,16 @@ plugins {
     alias(libs.plugins.androidMultiplatformLibrary)
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
-    alias(libs.plugins.kotlinSerialization)
 }
 
 kotlin {
     listOf(
         iosArm64(),
         iosSimulatorArm64()
-    ).forEach { iosTarget ->
-        iosTarget.binaries.framework {
-            baseName = "Shared"
-            isStatic = true
-            export(project(":core"))
-            export(project(":features:home"))
-            export(project(":features:exercises"))
-        }
-    }
+    )
     
     androidLibrary {
-       namespace = "com.garyfimo.gogym.shared"
+       namespace = "com.garyfimo.gogym.features.exercises"
        compileSdk = libs.versions.android.compileSdk.get().toInt()
        minSdk = libs.versions.android.minSdk.get().toInt()
     
@@ -33,29 +24,16 @@ kotlin {
        androidResources {
            enable = true
        }
-       withHostTest {
-           isIncludeAndroidResources = true
-       }
     }
     
     sourceSets {
         commonMain.dependencies {
-            api(project(":core"))
-            api(project(":features:home"))
-            api(project(":features:exercises"))
+            implementation(project(":core"))
             implementation(libs.compose.runtime)
             implementation(libs.compose.foundation)
             implementation(libs.compose.material3)
             implementation(libs.compose.ui)
             implementation(libs.compose.components.resources)
-            implementation(libs.compose.uiToolingPreview)
-        }
-        commonTest.dependencies {
-            implementation(libs.kotlin.test)
         }
     }
-}
-
-dependencies {
-    androidRuntimeClasspath(libs.compose.uiTooling)
 }
