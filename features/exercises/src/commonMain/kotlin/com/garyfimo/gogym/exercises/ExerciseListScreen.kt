@@ -1,4 +1,4 @@
-package com.garyfimo.gogym.ui
+package com.garyfimo.gogym.exercises
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
