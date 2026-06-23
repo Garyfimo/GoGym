@@ -6,6 +6,8 @@ import com.garyfimo.gogym.api.ExerciseApi
 import com.garyfimo.gogym.model.Exercise
 import com.garyfimo.gogym.workout.model.WorkoutExercise
 import com.garyfimo.gogym.workout.model.WorkoutSet
+import com.garyfimo.gogym.workout.model.WorkoutSession
+import com.garyfimo.gogym.workout.api.WorkoutApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -28,7 +30,8 @@ data class WorkoutSessionState(
 )
 
 class WorkoutSessionViewModel(
-    private val exerciseApi: ExerciseApi
+    private val exerciseApi: ExerciseApi,
+    private val workoutApi: WorkoutApi
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(WorkoutSessionState())
@@ -175,6 +178,24 @@ class WorkoutSessionViewModel(
 
     private fun generateId(): String {
         return Random.nextInt(1000000, 9999999).toString()
+    }
+
+    fun finishWorkout(onSuccess: () -> Unit) {
+        viewModelScope.launch {
+            _uiState.update { it.copy(error = null) }
+            try {
+                val session = WorkoutSession(
+                    id = generateId(),
+                    name = uiState.value.sessionName,
+                    startTime = 1719150000000L, // Placeholder/realistic epoch timestamp
+                    exercises = uiState.value.exercises
+                )
+                workoutApi.saveWorkout(session)
+                onSuccess()
+            } catch (e: Exception) {
+                _uiState.update { it.copy(error = e.message ?: "Failed to log workout session") }
+            }
+        }
     }
 
     override fun onCleared() {

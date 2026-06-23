@@ -28,8 +28,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.garyfimo.gogym.workout.api.WorkoutApi
 import com.garyfimo.gogym.api.ExerciseApi
 import com.garyfimo.gogym.model.Exercise
+import com.garyfimo.gogym.config.AppConfig
+import io.ktor.client.HttpClient
 import com.garyfimo.gogym.theme.components.GoGymButton
 import com.garyfimo.gogym.theme.components.GoGymOutlineButton
 import com.garyfimo.gogym.theme.components.GoGymSearchField
@@ -45,7 +48,17 @@ fun ActiveWorkoutScreen(
     onAddExerciseClick: () -> Unit,
     modifier: Modifier = Modifier,
     exerciseApi: ExerciseApi = koinInject(),
-    viewModel: WorkoutSessionViewModel = viewModel { WorkoutSessionViewModel(exerciseApi) }
+    httpClient: HttpClient = koinInject(),
+    appConfig: AppConfig = koinInject(),
+    viewModel: WorkoutSessionViewModel = viewModel {
+        WorkoutSessionViewModel(
+            exerciseApi = exerciseApi,
+            workoutApi = WorkoutApi(
+                client = httpClient,
+                appConfig = appConfig
+            )
+        )
+    }
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     var showCancelDialog by remember { mutableStateOf(false) }
@@ -258,7 +271,9 @@ fun ActiveWorkoutScreen(
                 Button(
                     onClick = {
                         showFinishDialog = false
-                        onBackClick()
+                        viewModel.finishWorkout {
+                            onBackClick()
+                        }
                     },
                     colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
                 ) {

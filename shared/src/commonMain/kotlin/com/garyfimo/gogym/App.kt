@@ -32,7 +32,10 @@ import com.garyfimo.gogym.exercises.ExerciseListScreen
 import com.garyfimo.gogym.exercises.ExerciseDetailScreen
 import com.garyfimo.gogym.workout.ActiveWorkoutScreen
 import com.garyfimo.gogym.workout.WorkoutSessionViewModel
+import com.garyfimo.gogym.workout.api.WorkoutApi
 import com.garyfimo.gogym.api.ExerciseApi
+import com.garyfimo.gogym.config.AppConfig
+import io.ktor.client.HttpClient
 import androidx.lifecycle.viewmodel.compose.viewModel
 
 import androidx.navigation.compose.NavHost
@@ -130,7 +133,10 @@ fun App() {
                         }
                         composable("active_workout") {
                             val exerciseApi = koinInject<ExerciseApi>()
-                            val workoutViewModel: WorkoutSessionViewModel = viewModel { WorkoutSessionViewModel(exerciseApi) }
+                            val httpClient = koinInject<HttpClient>()
+                            val appConfig = koinInject<AppConfig>()
+                            val workoutApi = remember(httpClient, appConfig) { WorkoutApi(httpClient, appConfig) }
+                            val workoutViewModel: WorkoutSessionViewModel = viewModel { WorkoutSessionViewModel(exerciseApi, workoutApi) }
                             
                             val savedStateHandle = navController.currentBackStackEntry?.savedStateHandle
                             val selectedExerciseId = savedStateHandle?.getStateFlow<String?>("selected_exercise_id", null)?.collectAsState()?.value
