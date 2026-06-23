@@ -22,13 +22,13 @@ import org.koin.compose.koinInject
 import gogym.shared.generated.resources.Res
 import gogym.shared.generated.resources.compose_multiplatform
 
-
+import com.garyfimo.gogym.theme.GoGymTheme
 
 @Composable
 @Preview
 fun App() {
     KoinContext {
-        MaterialTheme {
+        GoGymTheme {
             var showContent by remember { mutableStateOf(false) }
             val greetingService = koinInject<Greeting>()
             Column(
