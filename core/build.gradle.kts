@@ -12,17 +12,10 @@ kotlin {
     listOf(
         iosArm64(),
         iosSimulatorArm64()
-    ).forEach { iosTarget ->
-        iosTarget.binaries.framework {
-            baseName = "Shared"
-            isStatic = true
-            export(project(":core"))
-            export(project(":features:home"))
-        }
-    }
+    )
     
     androidLibrary {
-       namespace = "com.garyfimo.gogym.shared"
+       namespace = "com.garyfimo.gogym.core"
        compileSdk = libs.versions.android.compileSdk.get().toInt()
        minSdk = libs.versions.android.minSdk.get().toInt()
     
@@ -32,28 +25,31 @@ kotlin {
        androidResources {
            enable = true
        }
-       withHostTest {
-           isIncludeAndroidResources = true
-       }
     }
     
     sourceSets {
+        androidMain.dependencies {
+            implementation(libs.compose.uiToolingPreview)
+            implementation(libs.ktor.client.okhttp)
+        }
         commonMain.dependencies {
-            api(project(":core"))
-            api(project(":features:home"))
             implementation(libs.compose.runtime)
             implementation(libs.compose.foundation)
             implementation(libs.compose.material3)
             implementation(libs.compose.ui)
             implementation(libs.compose.components.resources)
             implementation(libs.compose.uiToolingPreview)
+            implementation(libs.androidx.lifecycle.viewmodelCompose)
+            implementation(libs.androidx.lifecycle.runtimeCompose)
+            api(libs.koin.core)
+            api(libs.koin.compose)
+            api(compose.materialIconsExtended)
+            api(libs.ktor.client.core)
+            api(libs.ktor.client.content.negotiation)
+            api(libs.ktor.serialization.kotlinx.json)
         }
-        commonTest.dependencies {
-            implementation(libs.kotlin.test)
+        iosMain.dependencies {
+            implementation(libs.ktor.client.darwin)
         }
     }
-}
-
-dependencies {
-    androidRuntimeClasspath(libs.compose.uiTooling)
 }
