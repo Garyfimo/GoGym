@@ -18,7 +18,7 @@ import org.jetbrains.compose.resources.painterResource
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.List
+import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material3.*
 import org.koin.compose.KoinContext
 import org.koin.compose.koinInject
@@ -28,6 +28,8 @@ import gogym.shared.generated.resources.compose_multiplatform
 
 import com.garyfimo.gogym.theme.GoGymTheme
 import com.garyfimo.gogym.ui.HomeDashboardScreen
+import com.garyfimo.gogym.ui.ExerciseListScreen
+import com.garyfimo.gogym.ui.ExerciseDetailScreen
 
 enum class Screen {
     Dashboard,
@@ -40,6 +42,7 @@ fun App() {
     KoinContext {
         GoGymTheme {
             var currentScreen by remember { mutableStateOf(Screen.Dashboard) }
+            var selectedExercise by remember { mutableStateOf<com.garyfimo.gogym.model.Exercise?>(null) }
             val greetingService = koinInject<Greeting>()
             val platformGreeting = remember { greetingService.greet() }
 
@@ -52,13 +55,18 @@ fun App() {
                             icon = { Icon(Icons.Default.Home, contentDescription = "Dashboard") },
                             label = { Text("Dashboard") },
                             selected = currentScreen == Screen.Dashboard,
-                            onClick = { currentScreen = Screen.Dashboard }
+                            onClick = { 
+                                currentScreen = Screen.Dashboard 
+                            }
                         )
                         NavigationBarItem(
-                            icon = { Icon(Icons.Default.List, contentDescription = "Exercises") },
+                            icon = { Icon(Icons.AutoMirrored.Filled.List, contentDescription = "Exercises") },
                             label = { Text("Exercises") },
                             selected = currentScreen == Screen.Exercises,
-                            onClick = { currentScreen = Screen.Exercises }
+                            onClick = { 
+                                currentScreen = Screen.Exercises
+                                selectedExercise = null // Reset detail navigation on tab click
+                            }
                         )
                     }
                 }
@@ -76,35 +84,21 @@ fun App() {
                                 },
                                 onBrowseExercisesClick = {
                                     currentScreen = Screen.Exercises
+                                    selectedExercise = null
                                 }
                             )
                         }
                         Screen.Exercises -> {
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .background(MaterialTheme.colorScheme.background),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                    Text(
-                                        text = "Exercises List",
-                                        style = MaterialTheme.typography.headlineMedium,
-                                        color = MaterialTheme.colorScheme.onBackground
-                                    )
-                                    Spacer(modifier = Modifier.height(8.dp))
-                                    Text(
-                                        text = "Task TR-003 will implement this screen.",
-                                        style = MaterialTheme.typography.bodyMedium,
-                                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f)
-                                    )
-                                    Spacer(modifier = Modifier.height(16.dp))
-                                    Text(
-                                        text = "Platform: $platformGreeting",
-                                        style = MaterialTheme.typography.labelMedium,
-                                        color = MaterialTheme.colorScheme.primary
-                                    )
-                                }
+                            val exercise = selectedExercise
+                            if (exercise != null) {
+                                ExerciseDetailScreen(
+                                    exercise = exercise,
+                                    onBackClick = { selectedExercise = null }
+                                )
+                            } else {
+                                ExerciseListScreen(
+                                    onExerciseClick = { selectedExercise = it }
+                                )
                             }
                         }
                     }
