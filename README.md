@@ -30,20 +30,19 @@ Use the run button in your IDE's editor gutter, or run tests using Gradle tasks:
 
 ### Mocking the backend with Mockoon
 
-The project includes a Mockoon configuration file at [mockoon/mockoon-environment.json](file:///Users/garyfimo/Documents/Projects/Personal/GoGym/GoGym/mockoon/mockoon-environment.json).
+The mock API configuration file is located at `../go-gym-mocks/go-gym.json` (sibling directory of the project).
 
 You can run this mock server using the Mockoon Desktop app or the Mockoon CLI:
 
-1. **Mockoon Desktop**: Open Mockoon, click "Open environment" (Ctrl+O / Cmd+O), and select the `mockoon-environment.json` file.
+1. **Mockoon Desktop**: Open Mockoon, click "Open environment" (Ctrl+O / Cmd+O), and select the `go-gym.json` file.
 2. **Mockoon CLI**: Run the following command:
    ```bash
-   mockoon-cli start --data ./mockoon/mockoon-environment.json
+   mockoon-cli start --data ../go-gym-mocks/go-gym.json
    ```
 
-The mock API runs on `http://localhost:8080` (base path `/api`) with the following endpoints:
+The mock API runs on `http://localhost:3000` (base path `/api`) with the following endpoints:
 - `GET /api/exercises` - Lists available exercises
-- `GET /api/workouts` - Lists user workouts
-- `POST /api/workouts` - Saves a workout
-- `GET /api/profile` - Retrieves user profile details
+- `GET /api/exercises/:id` - Retrieves a specific exercise by ID
+- `GET /api/routines` - Lists routines
 
 Learn more about [Kotlin Multiplatform](https://www.jetbrains.com/help/kotlin-multiplatform-dev/get-started.html)…
