@@ -31,6 +31,10 @@ import com.garyfimo.gogym.home.HomeDashboardScreen
 import com.garyfimo.gogym.exercises.ExerciseListScreen
 import com.garyfimo.gogym.exercises.ExerciseDetailScreen
 
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+
 enum class Screen {
     Dashboard,
     Exercises
@@ -42,7 +46,6 @@ fun App() {
     KoinContext {
         GoGymTheme {
             var currentScreen by remember { mutableStateOf(Screen.Dashboard) }
-            var selectedExercise by remember { mutableStateOf<com.garyfimo.gogym.model.Exercise?>(null) }
             val greetingService = koinInject<Greeting>()
             val platformGreeting = remember { greetingService.greet() }
 
@@ -65,7 +68,6 @@ fun App() {
                             selected = currentScreen == Screen.Exercises,
                             onClick = { 
                                 currentScreen = Screen.Exercises
-                                selectedExercise = null // Reset detail navigation on tab click
                             }
                         )
                     }
@@ -84,21 +86,26 @@ fun App() {
                                 },
                                 onBrowseExercisesClick = {
                                     currentScreen = Screen.Exercises
-                                    selectedExercise = null
                                 }
                             )
                         }
                         Screen.Exercises -> {
-                            val exercise = selectedExercise
-                            if (exercise != null) {
-                                ExerciseDetailScreen(
-                                    exercise = exercise,
-                                    onBackClick = { selectedExercise = null }
-                                )
-                            } else {
-                                ExerciseListScreen(
-                                    onExerciseClick = { selectedExercise = it }
-                                )
+                            val navController = rememberNavController()
+                            NavHost(navController = navController, startDestination = "list") {
+                                composable("list") {
+                                    ExerciseListScreen(
+                                        onExerciseClick = { exercise ->
+                                            navController.navigate("detail/${exercise.id}")
+                                        }
+                                    )
+                                }
+                                composable("detail/{exerciseId}") { backStackEntry ->
+                                    val exerciseId = backStackEntry.arguments?.getString("exerciseId") ?: ""
+                                    ExerciseDetailScreen(
+                                        exerciseId = exerciseId,
+                                        onBackClick = { navController.popBackStack() }
+                                    )
+                                }
                             }
                         }
                     }

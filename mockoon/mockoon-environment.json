@@ -69,6 +69,37 @@
       "responseMode": null,
       "streamingMode": null,
       "streamingInterval": 0
+    },
+    {
+      "uuid": "a28b030d-d913-4c9c-b17d-e7d8d21b72e5",
+      "type": "http",
+      "documentation": "Get exercise by ID",
+      "method": "get",
+      "endpoint": "exercises/:id",
+      "responses": [
+        {
+          "uuid": "887d1058-29fe-443b-be6b-80df20c08b49",
+          "body": "{{#eq (urlParam 'id') '1'}}{\"id\":\"1\",\"name\":\"Bench Press\",\"muscleGroup\":\"Chest\",\"equipment\":\"Barbell\",\"instructions\":\"Lie on a flat bench. Lower the barbell to mid-chest. Press back up until arms are fully extended.\"}{{/eq}}{{#eq (urlParam 'id') '2'}}{\"id\":\"2\",\"name\":\"Squat\",\"muscleGroup\":\"Legs\",\"equipment\":\"Barbell\",\"instructions\":\"Stand with feet shoulder-width apart. Lower your hips as if sitting in a chair. Push back up to the starting position.\"}{{/eq}}{{#eq (urlParam 'id') '3'}}{\"id\":\"3\",\"name\":\"Deadlift\",\"muscleGroup\":\"Back\",\"equipment\":\"Barbell\",\"instructions\":\"Stand with mid-foot under the bar. Hinge at hips to grab the bar. Drive through the floor to stand up straight.\"}{{/eq}}{{#eq (urlParam 'id') '4'}}{\"id\":\"4\",\"name\":\"Shoulder Press\",\"muscleGroup\":\"Shoulders\",\"equipment\":\"Dumbbells\",\"instructions\":\"Sit on a bench with back support. Press dumbbells overhead until arms are extended. Lower slowly.\"}{{/eq}}{{#eq (urlParam 'id') '5'}}{\"id\":\"5\",\"name\":\"Pull-up\",\"muscleGroup\":\"Back\",\"equipment\":\"Bodyweight\",\"instructions\":\"Hang from a pull-up bar with overhand grip. Pull your body up until your chin clears the bar.\"}{{/eq}}{{#eq (urlParam 'id') '6'}}{\"id\":\"6\",\"name\":\"Bicep Curl\",\"muscleGroup\":\"Arms\",\"equipment\":\"Dumbbells\",\"instructions\":\"Stand holding dumbbells. Curl weights toward shoulders while keeping elbows stationary.\"}{{/eq}}{{#eq (urlParam 'id') '7'}}{\"id\":\"7\",\"name\":\"Leg Press\",\"muscleGroup\":\"Legs\",\"equipment\":\"Machine\",\"instructions\":\"Sit on machine with feet on platform. Push weight up until legs are extended. Lower slowly.\"}{{/eq}}{{#eq (urlParam 'id') '8'}}{\"id\":\"8\",\"name\":\"Plank\",\"muscleGroup\":\"Core\",\"equipment\":\"Bodyweight\",\"instructions\":\"Hold a push-up position with forearms on the floor. Keep body in a straight line from head to heels.\"}{{/eq}}",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "",
+          "headers": [],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true,
+          "crudKey": "id",
+          "callbacks": []
+        }
+      ],
+      "responseMode": null,
+      "streamingMode": null,
+      "streamingInterval": 0
     }
   ],
   "rootChildren": [
@@ -79,6 +110,10 @@
     {
       "type": "route",
       "uuid": "a30a7b1c-5ec1-4906-9b70-22945c065da4"
+    },
+    {
+      "type": "route",
+      "uuid": "a28b030d-d913-4c9c-b17d-e7d8d21b72e5"
     }
   ],
   "proxyMode": false,

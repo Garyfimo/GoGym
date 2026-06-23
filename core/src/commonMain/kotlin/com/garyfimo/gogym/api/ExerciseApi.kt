@@ -13,4 +13,8 @@ class ExerciseApi(
     suspend fun getExercises(): List<Exercise> {
         return client.get("${appConfig.baseUrl}/api/exercises").body()
     }
+
+    suspend fun getExercise(id: String): Exercise {
+        return client.get("${appConfig.baseUrl}/api/exercises/$id").body()
+    }
 }
