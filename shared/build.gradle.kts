@@ -1,4 +1,7 @@
+@file:OptIn(org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeCacheApi::class)
+
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.plugin.mpp.DisableCacheInKotlinVersion
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
@@ -19,6 +22,10 @@ kotlin {
             export(project(":core"))
             export(project(":features:home"))
             export(project(":features:exercises"))
+            disableNativeCache(
+                version = DisableCacheInKotlinVersion.`2_4_0`,
+                reason = "Workaround for JetBrains navigation-compose caching bug with Kotlin 2.4.0"
+            )
         }
     }
     
@@ -43,6 +50,7 @@ kotlin {
             api(project(":core"))
             api(project(":features:home"))
             api(project(":features:exercises"))
+            api(libs.androidx.core.bundle)
             implementation(libs.compose.runtime)
             implementation(libs.compose.foundation)
             implementation(libs.compose.material3)
