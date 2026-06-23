@@ -31,12 +31,15 @@ fun ExerciseListScreen(
     var isLoading by remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf<String?>(null) }
     var searchQuery by remember { mutableStateOf("") }
+    var refreshTrigger by remember { mutableStateOf(0) }
 
-    LaunchedEffect(Unit) {
+    LaunchedEffect(refreshTrigger) {
         try {
             isLoading = true
+            errorMessage = null
             exercises = exerciseApi.getExercises()
         } catch (e: Exception) {
+            if (e is kotlinx.coroutines.CancellationException) throw e
             errorMessage = e.message ?: "An unexpected error occurred"
         } finally {
             isLoading = false
@@ -101,9 +104,7 @@ fun ExerciseListScreen(
                     GoGymButton(
                         text = "Retry",
                         onClick = {
-                            isLoading = true
-                            errorMessage = null
-                            exercises = null
+                            refreshTrigger++
                         }
                     )
                 }
@@ -140,18 +141,7 @@ fun ExerciseListScreen(
         }
     }
 
-    if (exercises == null && !isLoading && errorMessage == null) {
-        LaunchedEffect(Unit) {
-            try {
-                isLoading = true
-                exercises = exerciseApi.getExercises()
-            } catch (e: Exception) {
-                errorMessage = e.message ?: "An unexpected error occurred"
-            } finally {
-                isLoading = false
-            }
-        }
-    }
+    // Initial fetch and retry load are fully managed by the top-level LaunchedEffect(refreshTrigger)
 }
 
 @Composable
