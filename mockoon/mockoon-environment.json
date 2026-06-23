@@ -1,0 +1,199 @@
+{
+  "uuid": "d71b7829-cb6a-4933-9799-d4c38d2f5a6a",
+  "lastMigration": 32,
+  "name": "GoGym Mock API",
+  "endpointPrefix": "api",
+  "latency": 0,
+  "port": 8080,
+  "hostname": "",
+  "routes": [
+    {
+      "uuid": "4d35e7df-6fa8-4e31-97b7-5ab1626f254e",
+      "type": "http",
+      "documentation": "Get list of available exercises",
+      "method": "get",
+      "endpoint": "exercises",
+      "responses": [
+        {
+          "uuid": "2d890069-45e3-472e-8fbf-cbe33a042978",
+          "body": "[\n  { \"id\": \"ex-1\", \"name\": \"Bench Press\", \"category\": \"Chest\", \"primaryMuscles\": [\"Pectorals\", \"Triceps\"] },\n  { \"id\": \"ex-2\", \"name\": \"Squat\", \"category\": \"Legs\", \"primaryMuscles\": [\"Quadriceps\", \"Glutes\", \"Hamstrings\"] },\n  { \"id\": \"ex-3\", \"name\": \"Pull-up\", \"category\": \"Back\", \"primaryMuscles\": [\"Lats\", \"Biceps\"] },\n  { \"id\": \"ex-4\", \"name\": \"Overhead Press\", \"category\": \"Shoulders\", \"primaryMuscles\": [\"Deltoids\", \"Triceps\"] }\n]",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "Success",
+          "headers": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true,
+          "crudKey": "id"
+        }
+      ],
+      "responseMode": null
+    },
+    {
+      "uuid": "e3fe55fb-6d6f-4fb0-8d80-5bfa22f6bfba",
+      "type": "http",
+      "documentation": "Get user workout templates and history",
+      "method": "get",
+      "endpoint": "workouts",
+      "responses": [
+        {
+          "uuid": "d3f27f8a-4db5-4ad9-bf93-9c86a3788730",
+          "body": "[\n  {\n    \"id\": \"w-1\",\n    \"name\": \"Push Day\",\n    \"date\": \"2026-06-22T10:00:00Z\",\n    \"durationMinutes\": 60,\n    \"exercises\": [\n      { \"exerciseId\": \"ex-1\", \"sets\": [ { \"reps\": 8, \"weightKg\": 80.0 }, { \"reps\": 8, \"weightKg\": 82.5 } ] },\n      { \"exerciseId\": \"ex-4\", \"sets\": [ { \"reps\": 10, \"weightKg\": 50.0 }, { \"reps\": 8, \"weightKg\": 55.0 } ] }\n    ]\n  },\n  {\n    \"id\": \"w-2\",\n    \"name\": \"Pull Day\",\n    \"date\": \"2026-06-20T17:30:00Z\",\n    \"durationMinutes\": 45,\n    \"exercises\": [\n      { \"exerciseId\": \"ex-3\", \"sets\": [ { \"reps\": 12, \"weightKg\": 0.0 }, { \"reps\": 10, \"weightKg\": 0.0 } ] }\n    ]\n  }\n]",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "Success",
+          "headers": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true,
+          "crudKey": "id"
+        }
+      ],
+      "responseMode": null
+    },
+    {
+      "uuid": "a13cf10e-8fb8-4ef7-b2f7-b248eb3a84e3",
+      "type": "http",
+      "documentation": "Get user profile and statistics",
+      "method": "get",
+      "endpoint": "profile",
+      "responses": [
+        {
+          "uuid": "2e59dfd7-83eb-460d-85ad-c49c7198bb9a",
+          "body": "{\n  \"username\": \"garyfimo\",\n  \"displayName\": \"Gary Fimo\",\n  \"joinDate\": \"2026-01-01\",\n  \"streakDays\": 5,\n  \"workoutsCompletedCount\": 42\n}",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "Success",
+          "headers": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true,
+          "crudKey": "id"
+        }
+      ],
+      "responseMode": null
+    },
+    {
+      "uuid": "f0be8e01-d8ad-4a0b-9d41-e94fae9f5643",
+      "type": "http",
+      "documentation": "Save a new workout",
+      "method": "post",
+      "endpoint": "workouts",
+      "responses": [
+        {
+          "uuid": "97c5ad3b-eb86-4e5c-9db8-4033e07085ef",
+          "body": "{\n  \"status\": \"success\",\n  \"message\": \"Workout saved successfully\",\n  \"workoutId\": \"w-new\"\n}",
+          "latency": 0,
+          "statusCode": 201,
+          "label": "Created Successfully",
+          "headers": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true,
+          "crudKey": "id"
+        }
+      ],
+      "responseMode": null
+    }
+  ],
+  "rootChildren": [
+    {
+      "type": "route",
+      "uuid": "4d35e7df-6fa8-4e31-97b7-5ab1626f254e"
+    },
+    {
+      "type": "route",
+      "uuid": "e3fe55fb-6d6f-4fb0-8d80-5bfa22f6bfba"
+    },
+    {
+      "type": "route",
+      "uuid": "a13cf10e-8fb8-4ef7-b2f7-b248eb3a84e3"
+    },
+    {
+      "type": "route",
+      "uuid": "f0be8e01-d8ad-4a0b-9d41-e94fae9f5643"
+    }
+  ],
+  "folders": [],
+  "proxyMode": false,
+  "proxyHost": "",
+  "proxyRemovePrefix": false,
+  "tlsOptions": {
+    "keyPath": "",
+    "certPath": "",
+    "caPath": "",
+    "passphrase": "",
+    "secureProtocol": "",
+    "ciphers": "",
+    "honorCipherOrder": false
+  },
+  "cors": true,
+  "headers": [
+    {
+      "key": "Access-Control-Allow-Origin",
+      "value": "*"
+    },
+    {
+      "key": "Access-Control-Allow-Methods",
+      "value": "GET,POST,PUT,PATCH,DELETE,HEAD,OPTIONS"
+    },
+    {
+      "key": "Access-Control-Allow-Headers",
+      "value": "Content-Type, Origin, Accept, Authorization, Content-Length, X-Requested-With"
+    }
+  ],
+  "proxyReqHeaders": [
+    {
+      "key": "",
+      "value": ""
+    }
+  ],
+  "proxyResHeaders": [
+    {
+      "key": "",
+      "value": ""
+    }
+  ],
+  "data": [],
+  "callbacks": []
+}
