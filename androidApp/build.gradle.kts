@@ -40,7 +40,7 @@ android {
         create("mock") {
             dimension = "environment"
             applicationIdSuffix = ".mock"
-            buildConfigField("String", "BASE_URL", "\"http://10.0.2.2:8080\"")
+            buildConfigField("String", "BASE_URL", "\"http://10.0.2.2:3000\"")
             buildConfigField("String", "ENV_NAME", "\"MOCK\"")
         }
         create("qa") {

@@ -43,7 +43,7 @@ fun initKoin(appConfig: AppConfig, appDeclaration: KoinAppDeclaration = {}) = st
 // iOS/Preview entry point helper with default mock config
 fun initKoin() = initKoin(
     AppConfig(
-        baseUrl = "http://localhost:8080",
+        baseUrl = "http://localhost:3000",
         environment = "MOCK"
     )
 ) {}
