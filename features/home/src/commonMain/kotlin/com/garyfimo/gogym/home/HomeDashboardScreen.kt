@@ -9,6 +9,7 @@ import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -18,13 +19,28 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.garyfimo.gogym.theme.components.GoGymButton
 import com.garyfimo.gogym.theme.components.GoGymOutlineButton
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
+import org.koin.compose.koinInject
+import io.ktor.client.HttpClient
+import com.garyfimo.gogym.config.AppConfig
+import com.garyfimo.gogym.home.api.HomeApi
 
 @Composable
 fun HomeDashboardScreen(
     onStartWorkoutClick: () -> Unit,
     onBrowseExercisesClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    httpClient: HttpClient = koinInject(),
+    appConfig: AppConfig = koinInject(),
+    viewModel: HomeDashboardViewModel = viewModel {
+        HomeDashboardViewModel(
+            homeApi = HomeApi(httpClient, appConfig)
+        )
+    }
 ) {
+    val state by viewModel.uiState.collectAsStateWithLifecycle()
+
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -85,6 +101,38 @@ fun HomeDashboardScreen(
             fontWeight = FontWeight.Bold
         )
 
+        // Error display
+        if (state.error != null) {
+            Card(
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.errorContainer),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Row(
+                    modifier = Modifier.padding(12.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = state.error ?: "Error loading stats",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onErrorContainer,
+                        modifier = Modifier.weight(1f)
+                    )
+                    Button(
+                        onClick = { viewModel.loadWeeklyStats() },
+                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
+                    ) {
+                        Text("Retry", color = MaterialTheme.colorScheme.onError)
+                    }
+                }
+            }
+        }
+
+        val stats = state.stats
+        val workoutsVal = if (state.isLoading && stats == null) "..." else (stats?.workoutsCompleted?.toString() ?: "-")
+        val streakVal = if (state.isLoading && stats == null) "..." else (stats?.streakDays?.toString() ?: "-")
+        val activeTimeVal = if (state.isLoading && stats == null) "..." else (stats?.activeTimeMinutes?.toString() ?: "-")
+
         // Stats Grid
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -92,7 +140,7 @@ fun HomeDashboardScreen(
         ) {
             StatCard(
                 title = "Workouts",
-                value = "4",
+                value = workoutsVal,
                 unit = "completed",
                 icon = Icons.Default.CheckCircle,
                 iconColor = MaterialTheme.colorScheme.primary,
@@ -100,7 +148,7 @@ fun HomeDashboardScreen(
             )
             StatCard(
                 title = "Streak",
-                value = "5",
+                value = streakVal,
                 unit = "days",
                 icon = Icons.Default.Star,
                 iconColor = Color(0xFFFF5D00), // Orange
@@ -114,7 +162,7 @@ fun HomeDashboardScreen(
         ) {
             StatCard(
                 title = "Active Time",
-                value = "120",
+                value = activeTimeVal,
                 unit = "mins",
                 icon = Icons.Default.PlayArrow,
                 iconColor = MaterialTheme.colorScheme.secondary,
